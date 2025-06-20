@@ -73,6 +73,11 @@ app.post('/upload-avatar', upload.single('avatar'), (req, res) => {
 
 app.use('/avatars', express.static(avatarDir));
 
+if (!fs.existsSync(avatarDir)) {
+  fs.mkdirSync(avatarDir, { recursive: true });
+  console.log(`Создана папка для аватаров: ${avatarDir}`);
+}
+
 const gameRoom = new GameRoom(io);
 
 io.on('connection', (socket) => {
