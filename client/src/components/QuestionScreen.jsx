@@ -5,12 +5,17 @@ import Chat from './Chat';
 
 const QuestionScreen = () => {
     const { socket, quizName, isPaused, currentQuestion, timer, answerQuestion, players, currentPlayer,
-        abilities, useAbility, pauseGame, copyInviteLink, endGame, kickPlayer, gameState, questionNumber } = useGame();
+        abilities, useAbility, pauseGame, endGame, kickPlayer, gameState, questionNumber } = useGame();
     const [selectedAnswerId, setSelectedAnswerId] = useState(null);
     const [correctAnswerId, setCorrectAnswerId] = useState(null);
     const [selectedAbility, setSelectedAbility] = useState(null);
+    const [inviteLink, setInviteLink] = useState('');
     const [formattedTime, setFormattedTime] = useState('0:00');
     const [classTimer, setClassTimer] = useState('start-timer cute-font');
+
+    useEffect(() => {
+        setInviteLink(window.location.href);
+    }, []);
 
     useEffect(() => {
         setClassTimer(timer <= 5 ? "timer cute-font red-timer" : "timer cute-font");
@@ -50,6 +55,11 @@ const QuestionScreen = () => {
             socket.off('showAnswers', handleShowAnswers);
         };
     }, [socket]);
+
+    const copyInviteLink = () => {
+        navigator.clipboard.writeText(inviteLink);
+        alert('Ссылка скопирована в буфер обмена');
+    };
 
     const handleAnswer = (answerId) => {
         if (!correctAnswerId) {

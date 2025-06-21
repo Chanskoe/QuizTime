@@ -48,6 +48,7 @@ export const GameProvider = ({ children }) => {
                     avatarUrl: data.avatarUrl,
                     isHost: data.isHost,
                     score: data.score});
+                setAbilities(data.abilities);
                 setCurrentQuestion(data.currentQuestion);
                 setTimer(data.remainingTime);
                 setQuestionNumber({
@@ -55,6 +56,7 @@ export const GameProvider = ({ children }) => {
                     total: data.totalQuestions
                 });
                 setCurrentQuestion(data.currentQuestion);
+                setIsLobbyPaused(data.isLobbyPaused || false);
                 setIsPaused(data.isPaused || false);
                 if (data.gameResults) {
                     setGameResults(data.gameResults);
@@ -184,8 +186,9 @@ export const GameProvider = ({ children }) => {
             if (response.error) {
                 setJoinGameError(response.error);
             } else {
-                const { token, isHost, playerId } = response;
+                const { token, isHost, playerId, quizName } = response;
                 document.cookie = `token=${token}; path=/; max-age=3600; samesite=lax`;
+                setQuizName(quizName);
                 setCurrentPlayer({
                     id: playerId,
                     nickname,
@@ -225,6 +228,8 @@ export const GameProvider = ({ children }) => {
         socket.emit('sendMessage', newMessage);
     };
 
+    const toggleCountdownPause = () => socket.emit('toggleCountdownPause');
+
     const kickPlayer = (playerId) => socket.emit('kickPlayer', playerId);
 
     const pauseGame = () => socket.emit('pauseGame');
@@ -255,11 +260,13 @@ export const GameProvider = ({ children }) => {
             startGame,
             startCountdown,
             cancelCountdown,
+            toggleCountdownPause,
             countdownTime,
             answerQuestion,
             sendMessage,
             kickPlayer,
             pauseGame,
+            isPaused,
             isLobbyPaused,
             endGame,
             useAbility,

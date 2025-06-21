@@ -23,6 +23,14 @@ export default function setupSocket(socket, io, gameRoom) {
             player = gameRoom.restorePlayer(decoded.id, socket.id);
             if (player) {
                 let currentQuestion = null;
+                let countdownData = null;
+
+                if (gameRoom.gameState === 'COUNTDOWN') {
+                    countdownData = {
+                        countdownTime: gameRoom.countdownTime,
+                        isLobbyPaused: gameRoom.isLobbyPaused
+                    };
+                }
 
                 if (gameRoom.gameState === 'QUESTION') {
                     currentQuestion = gameRoom.questions[gameRoom.currentQuestionIndex];
@@ -34,12 +42,15 @@ export default function setupSocket(socket, io, gameRoom) {
                     avatarUrl: player.avatarUrl,
                     isHost: player.isHost,
                     score: player.score,
+                    abilities: player.abilities,
                     gameState: gameRoom.gameState,
                     quizName: gameRoom.quizName,
                     currentQuestionIndex: gameRoom.currentQuestionIndex,
                     currentQuestion: currentQuestion,
                     isPaused: gameRoom.isPaused,
                     remainingTime: gameRoom.remainingTime,
+                    isLobbyPaused: (countdownData ? countdownData.isLobbyPaused : gameRoom.isLobbyPaused),
+                    countdownTime: (countdownData ? countdownData.countdownTime : gameRoom.countdownTime),
                     displayedQuestionNumber: gameRoom.displayedQuestionNumber,
                     gameResults: gameRoom.gameState === 'RESULTS' ? gameRoom.calculateResults() : null,
                     totalQuestions: gameRoom.questions.length
@@ -65,7 +76,8 @@ export default function setupSocket(socket, io, gameRoom) {
             callback({
                 token,
                 isHost: player.isHost,
-                playerId: player.id
+                playerId: player.id,
+                quizName: gameRoom.quizName
             });
         } catch (e) {
             console.error('Join error:', e);
@@ -82,6 +94,12 @@ export default function setupSocket(socket, io, gameRoom) {
     socket.on('startCountdown', () => {
         if (player && player.isHost) {
             gameRoom.startCountdown();
+        }
+    });
+
+    socket.on('toggleCountdownPause', () => {
+        if (player && player.isHost) {
+            gameRoom.toggleCountdownPause();
         }
     });
 

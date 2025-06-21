@@ -239,12 +239,28 @@ export default class GameRoom {
     }
 
     startCountdown() {
+        if (this.countdownInterval) return;
+
+        if (this.countdownTime <= 0) {
+            this.countdownTime = 10;
+        }
+
         this.gameState = 'COUNTDOWN';
-        this.countdownTime = 10;
         this.isLobbyPaused = false;
+
         this.io.emit('gameStateChange', this.gameState);
         this.io.emit('updateCountdown', this.countdownTime);
+        this.io.emit('lobbyPaused', false);
         this.sendSystemMessage("Удачи!");
+
+        this.startCountdownTimer();
+    }
+
+    startCountdownTimer() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
 
         this.countdownInterval = setInterval(() => {
             if (this.isLobbyPaused) return;
@@ -254,20 +270,32 @@ export default class GameRoom {
 
             if (this.countdownTime <= 0) {
                 clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
                 this.startGame();
             }
         }, 1000);
     }
 
+    toggleCountdownPause() {
+        if (this.gameState !== 'COUNTDOWN') return;
+
+        this.isLobbyPaused = !this.isLobbyPaused;
+        this.io.emit('lobbyPaused', this.isLobbyPaused);
+    }
+
     cancelCountdown() {
-        if (this.countdownInterval) {
-            clearInterval(this.countdownInterval);
-            this.countdownInterval = null;
-            this.gameState = 'LOBBY';
-            this.countdownTime = 0;
-            this.io.emit('gameStateChange', this.gameState);
-            this.io.emit('updateCountdown', 0);
-        }
+        if (!this.countdownTimer) return;
+
+        clearInterval(this.countdownTimer);
+        this.countdownTimer = null;
+
+        this.gameState = 'LOBBY';
+        this.countdownTime = 0;
+        this.isLobbyPaused = false;
+
+        this.io.emit('gameStateChange', this.gameState);
+        this.io.emit('updateCountdown', 0);
+        this.io.emit('lobbyPaused', false);
     }
 
     checkAnswers(question) {
@@ -392,13 +420,8 @@ export default class GameRoom {
     }
 
     pauseGame() {
-        if (this.gameState === 'COUNTDOWN') {
-            this.isLobbyPaused = !this.isLobbyPaused;
-            this.io.emit('lobbyPaused', this.isLobbyPaused);
-        } else if (this.gameState === 'QUESTION') {
-            this.isPaused = !this.isPaused;
-            this.io.emit('gamePaused', this.isPaused);
-        }
+        this.isPaused = !this.isPaused;
+        this.io.emit('gamePaused', this.isPaused);
     }
 
     handleAnswer(playerId, questionId, answerId) {
@@ -414,15 +437,18 @@ export default class GameRoom {
     }
 
     useAbility(playerId, abilityType, targetPlayerId = null) {
-        if (this.gameState !== 'QUESTION' || this.isPaused) {
-            throw new Error("Способность можно использовать только во время активного вопроса");
-        }
-
         const player = this.players.find(p => p.id === playerId);
         const abilityIndex = player.abilities.findIndex(a => a.type === abilityType);
 
-        if (abilityIndex === -1) throw new Error("Способность недоступна");
+        if (abilityIndex === -1) throw new Error("Способность не существует");
         if (!player) return;
+
+        if (this.gameState !== 'QUESTION' || this.isPaused) {
+            this.io.to(player.socketId).emit('systemMessage', "Способность можно использовать только во время активного вопроса");
+            setTimeout(() => {
+                this.io.emit('clearSystemMessage');
+            }, 7000);
+        }
 
         player.abilities.splice(abilityIndex, 1);
         this.notifyPlayers();
@@ -442,6 +468,7 @@ export default class GameRoom {
                         player.score += 50;
                         this.sendSystemMessage(`Кто-то совершенно случайно нашел пару монет у себя в кармане!`);
                     }
+                    this.notifyPlayers();
                 }
                 break;
 
@@ -493,6 +520,18 @@ export default class GameRoom {
         if (player) {
             player.socketId = socketId;
             player.connected = true;
+
+            if (this.gameState === 'COUNTDOWN') {
+                this.io.to(socketId).emit('lobbyPaused', this.isLobbyPaused);
+                if (this.isLobbyPaused) {
+                    this.io.to(socketId).emit('updateCountdown', this.countdownTime);
+                }
+            }
+
+            if (this.gameState === 'QUESTION') {
+                this.io.to(socketId).emit('gamePaused', this.isPaused);
+            }
+
             this.notifyPlayers();
             return player;
         }

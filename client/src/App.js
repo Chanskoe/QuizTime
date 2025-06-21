@@ -12,7 +12,7 @@ function App() {
         <header>
             <h1 className="barrio-regular header">QUIZ TIME</h1>
         </header>
-        <main>
+        <main className="main">
             {gameState === 'LOBBY' && <Lobby />}
             {gameState === 'COUNTDOWN' && <Lobby />}
             {gameState === 'QUESTION' && <QuestionScreen />}

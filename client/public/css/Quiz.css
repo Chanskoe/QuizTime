@@ -145,6 +145,10 @@ p {
     font-weight: 500;
 }
 
+.main {
+    min-height: 90vh;
+}
+
 .start-but {
     border: 0;
     background-color: #FFF7A3;

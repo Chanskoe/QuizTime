@@ -6,8 +6,8 @@ import { cropImageToSquare } from '../utils/avatarUtils';
 
 const Lobby = () => {
     const { quizName, players, currentPlayer, joinGame, startGame, gameState, isPaused, isLobbyPaused,
-        countdownTime, startCountdown, cancelCountdown, abilities: contextAbilities,
-        kickPlayer, pauseGame, endGame, useAbility, joinGameError } = useGame();
+        countdownTime, startCountdown, toggleCountdownPause, cancelCountdown, abilities: contextAbilities,
+        kickPlayer, pauseGame, endGame, useAbility, joinGameError} = useGame();
     const [nickname, setNickname] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
@@ -197,9 +197,9 @@ const Lobby = () => {
                                 )}
                             </div>
                             <div className="start-info">
-                                <p className="quiz-description">Игра создана для всех моих друзей. Здесь ничего сложного нет - достаточно просто хорошо меня знать ;)</p>
+                                <p className="quiz-description">Вопросы викторины на абсолютно случайные темы, тебе следует быть очень эрудированным!</p>
                                 <p className="quiz-description">Очки можно получить, отвечая на вопросы и используя способности</p>
-                                <p className="quiz-description">Всего вопросов <span className="weight-medium">24</span></p>
+                                <p className="quiz-description">Всего вопросов <span className="weight-medium">10</span></p>
                                 <p className="quiz-description">В начале игры каждый получает две случайные способности. Также способности выдаются за правильные ответы на некоторые вопросы</p>
                                 <p className="quiz-description">Справа расположен чат, обязательно оставь там свое сообщение!</p>
                             </div>
@@ -276,7 +276,7 @@ const Lobby = () => {
                 </section>
 
                 <section className="options-card card">
-                    <button id="pause" className="option-button" onClick={pauseGame} disabled={!currentPlayer.isHost}>
+                    <button id="pause" className="option-button" onClick={() => toggleCountdownPause()} disabled={!currentPlayer.isHost}>
                         { isLobbyPaused ? "Продолжить игру" : "Приостановить игру" }
                     </button>
 
@@ -288,7 +288,7 @@ const Lobby = () => {
 
                     <div className="line"></div>
 
-                    <button className="option-button" onClick={endGame} disabled={!currentPlayer.isHost}>
+                    <button className="option-button" onClick={() => endGame()} disabled={!currentPlayer.isHost}>
                         Закончить игру досрочно
                     </button>
 
