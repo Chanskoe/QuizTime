@@ -262,6 +262,8 @@ export default class GameRoom {
             this.countdownInterval = null;
         }
 
+        this.isLobbyPaused = false;
+
         this.countdownInterval = setInterval(() => {
             if (this.isLobbyPaused) return;
 
@@ -284,10 +286,10 @@ export default class GameRoom {
     }
 
     cancelCountdown() {
-        if (!this.countdownTimer) return;
+        if (!this.countdownInterval) return;
 
-        clearInterval(this.countdownTimer);
-        this.countdownTimer = null;
+        clearInterval(this.countdownInterval);
+        this.countdownInterval = null;
 
         this.gameState = 'LOBBY';
         this.countdownTime = 0;
@@ -523,9 +525,7 @@ export default class GameRoom {
 
             if (this.gameState === 'COUNTDOWN') {
                 this.io.to(socketId).emit('lobbyPaused', this.isLobbyPaused);
-                if (this.isLobbyPaused) {
-                    this.io.to(socketId).emit('updateCountdown', this.countdownTime);
-                }
+                this.io.to(socketId).emit('updateCountdown', this.countdownTime);
             }
 
             if (this.gameState === 'QUESTION') {

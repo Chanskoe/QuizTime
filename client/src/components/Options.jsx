@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useGame } from '../contexts/GameContext';
 
 const Options = () => {
-    const { currentPlayer, countdownTime, isLobbyPaused, toggleCountdownPause, endGame } = useGame();
+    const { gameState, currentPlayer, countdownTime, isLobbyPaused, isPaused, toggleCountdownPause,
+        pauseGame, endGame } = useGame();
     const [inviteLink, setInviteLink] = useState('');
 
     useEffect(() => {
@@ -18,9 +19,18 @@ const Options = () => {
         <section className="options-card card">
             { currentPlayer.isHost ?
                 (   <>
-                    <button id="pause" className="option-button" onClick={() => toggleCountdownPause()}>
-                        { isLobbyPaused ? "Продолжить игру" : "Приостановить игру" }
-                    </button>
+                    { gameState === 'LOBBY' ?
+                        (
+                            <button id="pause" className="option-button" onClick={() => toggleCountdownPause()}>
+                                { isLobbyPaused ? "Продолжить игру" : "Приостановить игру" }
+                            </button>
+                        ) :
+                        (
+                            <button id="pause" className="option-button" onClick={() => pauseGame()}>
+                                { isPaused ? "Продолжить игру" : "Приостановить игру" }
+                            </button>
+                        )
+                    }
 
                     <div className="line"></div>
 

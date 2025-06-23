@@ -6,9 +6,9 @@ import Options from './Options';
 import { cropImageToSquare } from '../utils/avatarUtils';
 
 const Lobby = () => {
-    const { quizName, players, currentPlayer, joinGame, startGame, gameState, isPaused, isLobbyPaused,
-        countdownTime, startCountdown, toggleCountdownPause, cancelCountdown, abilities: contextAbilities,
-        kickPlayer, pauseGame, endGame, useAbility, joinGameError} = useGame();
+    const { quizName, players, currentPlayer, joinGame, startGame, gameState, isLobbyPaused,
+        countdownTime, startCountdown, cancelCountdown, abilities: contextAbilities,
+        kickPlayer, endGame, useAbility, joinGameError} = useGame();
     const [nickname, setNickname] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);

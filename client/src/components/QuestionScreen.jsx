@@ -6,7 +6,7 @@ import Options from './Options';
 
 const QuestionScreen = () => {
     const { socket, quizName, isPaused, currentQuestion, timer, answerQuestion, players, currentPlayer,
-        abilities, useAbility, pauseGame, endGame, kickPlayer, gameState, questionNumber } = useGame();
+        abilities, useAbility, endGame, kickPlayer, gameState, questionNumber } = useGame();
     const [selectedAnswerId, setSelectedAnswerId] = useState(null);
     const [correctAnswerId, setCorrectAnswerId] = useState(null);
     const [selectedAbility, setSelectedAbility] = useState(null);
