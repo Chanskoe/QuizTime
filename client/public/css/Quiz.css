@@ -2,6 +2,7 @@ body {
     margin: 0;
     font-family: "Inter", sans-serif;
     background-color: #FFF;
+    min-height: 100vh;
 }
 
 header {
@@ -21,7 +22,7 @@ main {
 
 footer {
     background-color: #BECE63;
-    height: 100px;
+    min-height: 100px;
     padding-top: 30px;
     padding-left: 10px;
     padding-right: 10px;
@@ -137,8 +138,8 @@ p {
     margin: 0 10% 20px 10%;
 }
 
-.quiz-description {
-
+.waiting-host {
+    margin: 0 10%;
 }
 
 .weight-medium {
@@ -266,6 +267,10 @@ p {
 
 .blue {
     background-color: #B5CED8;
+}
+
+.red-timer {
+    color: #A00D0D;
 }
 
 .answers-photos {
@@ -448,6 +453,10 @@ p {
     flex-wrap: wrap;
     justify-content: center;
     gap: 2%;
+}
+
+.result, .no-reg {
+    padding-bottom: 20px;
 }
 
 .member {

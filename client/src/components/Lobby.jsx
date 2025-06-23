@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '../contexts/GameContext';
 import PlayerCard from './PlayerCard';
 import Chat from './Chat';
+import Options from './Options';
 import { cropImageToSquare } from '../utils/avatarUtils';
 
 const Lobby = () => {
@@ -275,24 +276,7 @@ const Lobby = () => {
                     </p>
                 </section>
 
-                <section className="options-card card">
-                    <button id="pause" className="option-button" onClick={() => toggleCountdownPause()} disabled={!currentPlayer.isHost}>
-                        { isLobbyPaused ? "Продолжить игру" : "Приостановить игру" }
-                    </button>
-
-                    <div className="line"></div>
-
-                    <button className="option-button" onClick={copyInviteLink}>
-                        Скопировать ссылку-приглашение
-                    </button>
-
-                    <div className="line"></div>
-
-                    <button className="option-button" onClick={() => endGame()} disabled={!currentPlayer.isHost}>
-                        Закончить игру досрочно
-                    </button>
-
-                </section>
+                <Options />
              </div>
         </>
     );

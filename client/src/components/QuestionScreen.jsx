@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGame } from '../contexts/GameContext';
 import PlayerCard from './PlayerCard';
 import Chat from './Chat';
+import Options from './Options';
 
 const QuestionScreen = () => {
     const { socket, quizName, isPaused, currentQuestion, timer, answerQuestion, players, currentPlayer,
@@ -212,31 +213,7 @@ const QuestionScreen = () => {
                     </p>
                 </section>
 
-                <section className="options-card card">
-                    <button
-                        id="pause"
-                        className="option-button"
-                        onClick={pauseGame}
-                        disabled={!currentPlayer?.isHost}
-                    >
-                        { isPaused ? "Продолжить игру" : "Приостановить игру"}
-                    </button>
-                    <div className="line"></div>
-                    <button
-                        className="option-button"
-                        onClick={copyInviteLink}
-                    >
-                        Скопировать ссылку-приглашение
-                    </button>
-                    <div className="line"></div>
-                    <button
-                        className="option-button"
-                        onClick={endGame}
-                        disabled={!currentPlayer?.isHost}
-                    >
-                        Закончить игру досрочно
-                    </button>
-                </section>
+                <Options />
             </div>
         </>
     );
